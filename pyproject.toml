@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fsi-tls-cert-sentinel"
+version = "0.1.0"
+description = "FSI Cryptographic, TLS & Post-Quantum Readiness Auditor"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+fsi-tls-sentinel = "tls_sentinel.cli:main"
