@@ -6,6 +6,7 @@ from pathlib import Path
 import unittest
 
 from tls_sentinel.auditor import audit_inventory
+from tls_sentinel.cli import format_sarif
 
 EXAMPLES_DIR = Path(__file__).resolve().parent.parent / "examples"
 
@@ -25,6 +26,15 @@ class TestTlsAuditor(unittest.TestCase):
             by_endpoint["legacy-swift-gw.example:443"],
             {"TLS-EXP-002", "TLS-PROTO-001", "TLS-KEY-001", "TLS-SIG-001", "TLS-PQC-001"},
         )
+
+
+    def test_sarif_formatter_valid_schema(self) -> None:
+        now = datetime(2026, 11, 26, tzinfo=timezone.utc)
+        data = json.loads((EXAMPLES_DIR / "sample_inventory.json").read_text(encoding="utf-8"))
+        findings = audit_inventory(data["endpoints"], now=now)
+        sarif = json.loads(format_sarif(findings))
+        self.assertEqual(sarif["version"], "2.1.0")
+        self.assertEqual(len(sarif["runs"][0]["results"]), len(findings))
 
 
 if __name__ == "__main__":
