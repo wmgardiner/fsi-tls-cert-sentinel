@@ -135,3 +135,11 @@ def audit_inventory(
     for entry in endpoints:
         all_findings.extend(audit_endpoint(entry, now=now, warn_days=warn_days))
     return all_findings
+
+
+def summarize_pqc_readiness(endpoints: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Compute percentage of endpoints advertising hybrid post-quantum key exchange."""
+    total = len(endpoints)
+    ready = sum(1 for e in endpoints if set(e.get("key_exchange", [])) & PQC_KEY_EXCHANGES)
+    pct = round((ready / total) * 100.0, 1) if total else 100.0
+    return {"total_endpoints": total, "pqc_ready": ready, "readiness_percent": pct}
