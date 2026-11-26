@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import unittest
 
-from tls_sentinel.auditor import audit_inventory
+from tls_sentinel.auditor import audit_inventory, summarize_pqc_readiness
 from tls_sentinel.cli import format_sarif
 
 EXAMPLES_DIR = Path(__file__).resolve().parent.parent / "examples"
@@ -35,6 +35,14 @@ class TestTlsAuditor(unittest.TestCase):
         sarif = json.loads(format_sarif(findings))
         self.assertEqual(sarif["version"], "2.1.0")
         self.assertEqual(len(sarif["runs"][0]["results"]), len(findings))
+
+
+    def test_pqc_readiness_summary(self) -> None:
+        data = json.loads((EXAMPLES_DIR / "sample_inventory.json").read_text(encoding="utf-8"))
+        summary = summarize_pqc_readiness(data["endpoints"])
+        self.assertEqual(summary["total_endpoints"], 2)
+        self.assertEqual(summary["pqc_ready"], 1)
+        self.assertEqual(summary["readiness_percent"], 50.0)
 
 
 if __name__ == "__main__":
